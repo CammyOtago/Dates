@@ -1,5 +1,7 @@
 const readline = require('readline');
 
+const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
 // function to determine leap year using 4 or 400 but not 100 rule
 function isLeapYear(year) {
     return ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0);
@@ -56,12 +58,29 @@ function validateDate(date) {
         if (date.year.length == 2) { // convert to 4 digit year
             date.year = date.year < 50 ? '20' + date.year : '19' + date.year;
         } else console.log('error here'); // error if the length of year is invalid
-    } else {
-        if (date.year < 1753 || date.year > 3000) console.log('error here');
+    } else { 
+        if (date.year < 1753 || date.year > 3000) console.log('error here'); // check within bounds
     }
 
     // month checks
-    // if (date.month > 12 || date.month < 1) console.log('error here');
+    const num = /^[0-9]+$/;
+    const str = /^[A-Za-z]+$/;
+
+    if (num.test(date.month)) {
+
+        if (date.month > 12 || date.month < 1) {
+            console.log('error here');
+        } else {
+            date.month = months[date.month-1];
+        }   
+
+    } else if (str.test(date.month)) {
+
+        date.month = date.month.toUpperCase();
+        if (!months.includes(date.month)) console.log('error here'); 
+
+    } else console.log('error here');
+
 
     // day checks
 
