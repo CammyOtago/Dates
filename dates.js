@@ -53,7 +53,9 @@ function convertLinesToDates(lines) {
 
 function validateDate(date) {
     
-    // year checks
+    /**
+     * Year Checks
+     */
     if (date.year.length != 4) { // only run this code if the year isnt 4 digits
         if (date.year.length == 2) { // convert to 4 digit year
             date.year = date.year < 50 ? '20' + date.year : '19' + date.year;
@@ -62,27 +64,34 @@ function validateDate(date) {
         if (date.year < 1753 || date.year > 3000) console.log('error here'); // check within bounds
     }
 
-    // month checks
+    /**
+     * Month Checks
+     */
+
+    // expressions for acceptable numbers and letters
     const num = /^[0-9]+$/;
     const str = /^[A-Za-z]+$/;
 
-    if (num.test(date.month)) {
-
+    if (num.test(date.month)) { // test if month uses numbers
+        // check if date within bounds
         if (date.month > 12 || date.month < 1) {
             console.log('error here');
         } else {
-            date.month = months[date.month-1];
+            date.month = months[date.month-1]; // convert to 3 letter format
         }   
 
-    } else if (str.test(date.month)) {
-
+    } else if (str.test(date.month)) { // test if month uses letters
+        // convert to uppercase
         date.month = date.month.toUpperCase();
+        // check if month is inside the months array
         if (!months.includes(date.month)) console.log('error here'); 
 
-    } else console.log('error here');
+    } else console.log('error here'); // error if contains a mix of letters and nums or other
 
 
-    // day checks
+    /**
+     * Day Checks
+     */
 
     console.log(date.toString());
 }
