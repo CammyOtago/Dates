@@ -6,14 +6,14 @@ function isLeapYear(year) {
 }
 
 // function returns the days of month param
-function getDays(month) {
-    if(month == 2) {
-        if(isLeapYear(year)) {
+function getDaysOfMonth(date) {
+    if(date.month == 2) {
+        if(isLeapYear(date.year)) {
             return 29;
         } else return 28;
-    } else if(month % 2 != 0) {
+    } else if(date.month % 2 != 0) {
         return 31; 
-    } else if(month % 2 == 0) {
+    } else if(date.month % 2 == 0) {
         return 30;
     }
 }
@@ -50,7 +50,22 @@ function convertLinesToDates(lines) {
 
 
 function validateDate(date) {
-    console.log('second test commit');
+    
+    // year checks
+    if (date.year.length != 4) { // only run this code if the year isnt 4 digits
+        if (date.year.length == 2) { // convert to 4 digit year
+            date.year = date.year < 50 ? '20' + date.year : '19' + date.year;
+        } else console.log('error here'); // error if the length of year is invalid
+    } else {
+        if (date.year < 1753 || date.year > 3000) console.log('error here');
+    }
+
+    // month checks
+    // if (date.month > 12 || date.month < 1) console.log('error here');
+
+    // day checks
+
+    console.log(date.toString());
 }
 
 
