@@ -50,7 +50,7 @@ function convertLinesToDates(lines) {
 
 
 function validateDate(date) {
-    console.log('testing commit');
+    console.log('second test commit');
 }
 
 
