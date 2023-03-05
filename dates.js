@@ -9,15 +9,15 @@ function isLeapYear(year) {
 
 // function returns the days of month param
 function getDaysOfMonth(date) {
-    if(date.month == 2) {
+    let month = months.indexOf(date.month) + 1;
+
+    if(month == 2) {
         if(isLeapYear(date.year)) {
             return 29;
         } else return 28;
-    } else if(date.month % 2 != 0) {
+    } else if(month % 2 != 0) {
         return 31; 
-    } else if(date.month % 2 == 0) {
-        return 30;
-    }
+    } else return 30;
 }
 
 // function takes an array and converts each line from the array into a date object
@@ -56,6 +56,7 @@ function validateDate(date) {
     /**
      * Year Checks
      */
+
     if (date.year.length != 4) { // only run this code if the year isnt 4 digits
         if (date.year.length == 2) { // convert to 4 digit year
             date.year = date.year < 50 ? '20' + date.year : '19' + date.year;
@@ -92,6 +93,13 @@ function validateDate(date) {
     /**
      * Day Checks
      */
+
+    // don't even check the day if month or year has an error (pointless)
+    if (date.error != '') return;
+    // check if the day is within the bounds of the correct days of the month
+    if (date.day > getDaysOfMonth(date) || date.day < 1) console.log('error here');
+
+
 
     console.log(date.toString());
 }
