@@ -229,4 +229,16 @@ function readFromFile(fileName) {
     });
 }
 
-readFromFile('dates.txt');
+/**
+ * MAIN SCRIPT
+ */
+
+// get filename from CLI
+const fileName = process.argv[2];
+
+if (fileName == null) {
+    console.log('No FileName found - Getting input from console...');
+    readFromConsole();
+} else {
+    readFromFile(fileName);
+}
