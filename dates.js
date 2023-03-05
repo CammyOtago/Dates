@@ -1,4 +1,5 @@
 const readline = require('readline');
+const fs = require('fs');
 
 // month list
 const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -63,7 +64,6 @@ function validateDate(date) {
         } else date.month = months[date.month-1]; // convert to 3 letter format   
     // test if month uses only letters
     } else if (str.test(date.month)) { 
-        // convert to uppercase
         date.month = date.month.toUpperCase();
         // check if month is inside the months array
         if (!months.includes(date.month)) date.setError(`Month '${date.month}' does not match any existing months.`); 
@@ -137,6 +137,7 @@ function processLine(line) {
 /**
  * convertLinesToDates function
  * @param lines 
+ * outer function to safely run through input lines
  */
 function convertLinesToDates(lines) {
     console.log(`Checking ${lines.length} dates:`);
@@ -194,4 +195,38 @@ function readFromConsole() {
     rl.question();
 }
 
-readFromConsole();
+/**
+ * Function to read and process input from a file
+ */
+function readFromFile(fileName) {
+    // initiate lines array
+    const lines = [];
+
+    // readStream object
+    const read = fs.createReadStream(fileName, {encoding: 'utf-8'});
+
+    read.on('data', (input) => {
+        // split up lines
+        const allLines = input.split('\r\n');
+
+        // quick check to remove empty line at the end
+        if(allLines[allLines.length-1] === '') {
+            allLines.pop();
+        }
+
+        // push lines into array and trims whitespace from front and end
+        lines.push(...allLines.map(line => line.trim()));
+    });
+
+    read.on('end', () => {
+        // convert lines to dates
+        convertLinesToDates(lines);
+    });
+
+    // catch file errors
+    read.on('error', (e) => {
+        console.error(e);
+    });
+}
+
+readFromFile('dates.txt');
