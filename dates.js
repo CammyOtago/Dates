@@ -1,93 +1,74 @@
 const readline = require('readline');
 
+// month list
 const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+// expressions for acceptable numbers and letters
+const num = /^[0-9]+$/;
+const str = /^[A-Za-z]+$/;
 
 // function to determine leap year using 4 or 400 but not 100 rule
 function isLeapYear(year) {
     return ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0);
 }
 
-// function returns the days of month param
+/**
+ * getDaysOfMonth function
+ * @param date 
+ * @returns upper bound of days for the month
+ */
 function getDaysOfMonth(date) {
+    // get numeric value for month
     let month = months.indexOf(date.month) + 1;
 
-    if(month == 2) {
-        if(isLeapYear(date.year)) {
-            return 29;
-        } else return 28;
-    } else if(month % 2 != 0) {
-        return 31; 
-    } else return 30;
+    if (month == 2) { // check if month is february
+        return isLeapYear(date.year) ? 29 : 28;
+    } else if (month > 7) { // if month is past july, restart the numeric
+        month -= 7;
+    } 
+    // classic test to find days of the month
+    return month % 2 != 0 ? 31 : 30;
 }
 
-// function takes an array and converts each line from the array into a date object
-function convertLinesToDates(lines) {
-    console.log(`Checking ${lines.length} dates:`);
-
-    // run through lines
-    for (let i in lines) {
-        let line = lines[i]
-        // find out the dates seperator
-        let seperator = line.includes('/') ? "/" : line.includes('-') ? "-" : line.includes(' ') ? ' ' : 'error';
-        
-        let splitDate = line.split(seperator);
-        // make sure only one seperator type is used
-        if (splitDate.length != 3) console.log('error here');
-
-        // create date object
-        const date = {
-            day: splitDate[0],
-            month: splitDate[1],
-            year: splitDate[2],
-            error: '',
-            toString() {
-                return `${this.day} ${this.month} ${this.year} ${this.error}`;
-            }
-        };
-
-        // console.log(date.toString());
-        validateDate(date);
-    }    
-}
-
-
+/**
+ * validateDate function
+ * @param date 
+ * @checks for errors on date 
+ */
 function validateDate(date) {
     
     /**
      * Year Checks
      */
 
+    // make sure year is a number
+    if(!num.test(date.year)) date.setError(`Year '${date.year}' must be numeric.`)
+
     if (date.year.length != 4) { // only run this code if the year isnt 4 digits
         if (date.year.length == 2) { // convert to 4 digit year
             date.year = date.year < 50 ? '20' + date.year : '19' + date.year;
-        } else console.log('error here'); // error if the length of year is invalid
-    } else { 
-        if (date.year < 1753 || date.year > 3000) console.log('error here'); // check within bounds
-    }
+        } else date.setError(`Year '${date.year}' does not match acceptable format: yy or yyyy.`); // error if the length of year is invalid
+    // check within bounds
+    } else if (date.year < 1753 || date.year > 3000) date.setError(`Year '${date.year}' out of range > 1753 - 3000.`); 
 
     /**
      * Month Checks
      */
 
-    // expressions for acceptable numbers and letters
-    const num = /^[0-9]+$/;
-    const str = /^[A-Za-z]+$/;
-
-    if (num.test(date.month)) { // test if month uses numbers
+    // test if month uses only numbers
+    if (num.test(date.month)) { 
         // check if date within bounds
         if (date.month > 12 || date.month < 1) {
-            console.log('error here');
-        } else {
-            date.month = months[date.month-1]; // convert to 3 letter format
-        }   
-
-    } else if (str.test(date.month)) { // test if month uses letters
+            date.setError(`Month '${date.month}' out of range > 1-12.`)
+        } else date.month = months[date.month-1]; // convert to 3 letter format   
+    // test if month uses only letters
+    } else if (str.test(date.month)) { 
         // convert to uppercase
         date.month = date.month.toUpperCase();
         // check if month is inside the months array
-        if (!months.includes(date.month)) console.log('error here'); 
-
-    } else console.log('error here'); // error if contains a mix of letters and nums or other
+        if (!months.includes(date.month)) date.setError(`Month '${date.month}' does not match any existing months.`); 
+    // error here if month mixes or has special characters
+    } else date.setError(`Month '${date.month}' does not match acceptable format > mm, m, 0m or 3 letters.`);
 
 
     /**
@@ -95,16 +76,77 @@ function validateDate(date) {
      */
 
     // don't even check the day if month or year has an error (pointless)
-    if (date.error != '') return;
+    if (date.error) return;
+    // make sure day is a number
+    if(!num.test(date.day)) date.setError(`Day '${date.day}' must be numeric.`)
     // check if the day is within the bounds of the correct days of the month
-    if (date.day > getDaysOfMonth(date) || date.day < 1) console.log('error here');
+    if (date.day > getDaysOfMonth(date) || date.day < 1) date.setError(`Day '${date.day}' out of range > ${date.month} 1-${getDaysOfMonth(date)} days.`);
 
+    // finished checks!
+}
 
+/**
+ * processLine function
+ * @param line 
+ * @logs the line converted to date
+ */
+function processLine(line) {
+    // find out the dates seperator
+    let seperator = line.includes('/') ? "/" : line.includes('-') ? "-" : line.includes(' ') ? ' ' : 'error';
 
-    console.log(date.toString());
+    // catch seperator error
+    if (seperator == 'error') { 
+        console.log(`${line} - Invalid\nNo seperator found.`);
+        return;
+    } else {
+        // split the date based on the seperator found
+        let splitDate = line.split(seperator);
+        
+        // make sure only one seperator type is used
+        if (splitDate.length != 3) {
+            console.log(`${line} - Invalid\nDate is not seperated into 3 > day month year.`);
+            return
+        };
+
+        // create date object
+        const date = {
+            day: splitDate[0],
+            month: splitDate[1],
+            year: splitDate[2],
+            setError(msg) {     // sets an error msg for the date
+                if (!this.error) this.error = ` - Invalid\n${msg}`;
+            },
+            toString() {    // only logs error if one exists
+                return `${this.day} ${this.month} ${this.year} ${this.error ? `${this.error}` : ''}`;
+            }
+        };
+
+        // go through date checks
+        validateDate(date);
+
+        /**
+         * If date reaches this point with no errors added,
+         * it will print out perfectly,
+         * otherwise it will print out the first error it came across.
+        */
+       console.log(date.toString());
+    }
 }
 
 
+/**
+ * convertLinesToDates function
+ * @param lines 
+ */
+function convertLinesToDates(lines) {
+    console.log(`Checking ${lines.length} dates:`);
+
+    // run through lines
+    for (let i in lines) {
+        let line = lines[i]
+        processLine(line);
+    }   
+}
 
 /**
  * Function to read and process input from console
@@ -132,8 +174,6 @@ function readFromConsole() {
 
     // finish input stream with EOF
     rl.on('close', () => {
-        console.log('');
-
         // function to convert lines into dates
         convertLinesToDates(lines);
 
