@@ -2,7 +2,7 @@ const readline = require('readline');
 const fs = require('fs');
 
 // month list
-const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 // expressions for acceptable numbers and letters
 const num = /^[0-9]+$/;
@@ -64,7 +64,8 @@ function validateDate(date) {
         } else date.month = months[date.month-1]; // convert to 3 letter format   
     // test if month uses only letters
     } else if (str.test(date.month)) { 
-        date.month = date.month.toUpperCase();
+        date.month = date.month.toLowerCase();
+        date.month[0] = date.month[0].toUpperCase();
         // check if month is inside the months array
         if (!months.includes(date.month)) date.setError(`Month '${date.month}' does not match any existing months.`); 
     // error here if month mixes or has special characters
@@ -114,10 +115,10 @@ function processLine(line) {
             month: splitDate[1],
             year: splitDate[2],
             setError(msg) {     // sets an error msg for the date
-                if (!this.error) this.error = ` - Invalid\n${msg}`;
+                if (!this.error) this.error = msg;
             },
             toString() {    // only logs error if one exists
-                return `${this.day} ${this.month} ${this.year} ${this.error ? `${this.error}` : ''}`;
+                return `${this.day} ${this.month} ${this.year} ${this.error ? ' - Invalid' : ''}`;
             }
         };
 
@@ -130,6 +131,7 @@ function processLine(line) {
          * otherwise it will print out the first error it came across.
         */
        console.log(date.toString());
+       date.error ? console.error(date.error) : null;
     }
 }
 
@@ -140,7 +142,7 @@ function processLine(line) {
  * outer function to safely run through input lines
  */
 function convertLinesToDates(lines) {
-    console.log(`Checking ${lines.length} dates:`);
+    console.error(`Checking ${lines.length} dates:`);
 
     // run through lines
     for (let i in lines) {
@@ -165,12 +167,7 @@ function readFromConsole() {
     // handle the line read from input stream
     rl.on('line', (line) => {
         // finish input stream with blank line
-        if (line === '') {
-            rl.close();
-        } else {
-            // add line to array
-            lines.push(line);
-        }
+        line === '' ? rl.close() : lines.push(line);
     });
 
     // finish input stream with EOF
@@ -210,12 +207,10 @@ function readFromFile(fileName) {
         const allLines = input.split('\r\n');
 
         // quick check to remove empty line at the end
-        if(allLines[allLines.length-1] === '') {
-            allLines.pop();
-        }
+        if(allLines[allLines.length-1] === '') allLines.pop();
 
-        // push lines into array and trims whitespace from front and end
-        lines.push(...allLines.map(line => line.trim()));
+        // push lines into array
+        lines.push(...allLines);
     });
 
     read.on('end', () => {
@@ -237,7 +232,6 @@ function readFromFile(fileName) {
 const fileName = process.argv[2];
 
 if (fileName == null) {
-    console.log('No FileName found - Getting input from console...');
     readFromConsole();
 } else {
     readFromFile(fileName);
