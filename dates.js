@@ -158,7 +158,7 @@ function processLine(line) {
  * outer function to safely run through input lines
  */
 function convertLinesToDates(lines) {
-    console.error(`Checking ${lines.length} dates:`);
+    // console.error(`Checking ${lines.length} dates:`);
 
     // run through lines
     for (let i in lines) {
@@ -183,7 +183,8 @@ function readFromConsole() {
     // handle the line read from input stream
     rl.on('line', (line) => {
         // finish input stream with blank line
-        line === '' ? rl.close() : lines.push(line);
+        // line === '' ? rl.close() : lines.push(line);
+        lines.push(line);
     });
 
     // finish input stream with EOF
@@ -194,7 +195,6 @@ function readFromConsole() {
         // clear the input lines
         lines = [];
         // restart the readline interface
-        console.log('');
         readFromConsole();
     });
 
@@ -203,7 +203,7 @@ function readFromConsole() {
         process.exit();
     });
 
-    console.error('Enter a list of dates: ');
+    // console.error('Enter a list of dates: ');
     // begin input stream
     rl.question();
 }
