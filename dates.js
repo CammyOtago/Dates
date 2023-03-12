@@ -90,6 +90,8 @@ function validateDate(date) {
     if (date.error) return;
     // make sure day is a number
     if(!num.test(date.day)) date.setError(`Day '${date.day}' must be numeric.`);
+    // check input format
+    if(date.day.length > 2) date.setError(`Day '${date.day}' does not match format> => dd, d, 0d.`);
     // check if the day is within the bounds of the correct days of the month
     if (date.day > getDaysOfMonth(date) || date.day < 1) date.setError(`Day '${date.day}' out of range => ${date.month} 1-${getDaysOfMonth(date)} days.`);
 
