@@ -6,7 +6,11 @@ const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 
 // expressions for acceptable numbers and letters
 const num = /^[0-9]+$/;
-const str = /^[A-Za-z]+$/;
+/**
+ * This regex also checks if the first char is uppercase while the rest is lowercase
+ * or if it is all lowercase/uppercase
+ */
+const str = /^(?:[A-Z][a-z]*|[a-z]+|[A-Z]+)$/;
 
 // function to determine leap year using 4 or 400 but not 100 rule
 function isLeapYear(year) {
@@ -69,7 +73,7 @@ function validateDate(date) {
         // check if month is inside the months array
         if (!months.includes(date.month)) date.setError(`Month '${date.month}' does not match any existing months.`); 
     // error here if month mixes or has special characters
-    } else date.setError(`Month '${date.month}' does not match acceptable format => mm, m, 0m or 3 letters.`);
+    } else date.setError(`Month '${date.month}' does not match acceptable format => mm, m, 0m or 3 letters (case sensitive).`);
 
 
     /**
