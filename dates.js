@@ -64,8 +64,8 @@ function validateDate(date) {
         } else date.month = months[date.month-1]; // convert to 3 letter format   
     // test if month uses only letters
     } else if (str.test(date.month)) { 
-        date.month = date.month.toLowerCase();
-        date.month[0] = date.month[0].toUpperCase();
+        // ensures the first letter is upper case and the remaining are lowercase
+        date.month = date.month[0].toUpperCase() + date.month.toLowerCase().slice(1);
         // check if month is inside the months array
         if (!months.includes(date.month)) date.setError(`Month '${date.month}' does not match any existing months.`); 
     // error here if month mixes or has special characters
@@ -76,14 +76,14 @@ function validateDate(date) {
      * Day Checks
      */
 
-    // don't even check the day if month or year has an error (pointless)
+    // add 0 if day doesnt have one
+    if (date.day.length < 2) date.day = 0 + date.day;
+    // don't even check the day for errors if month or year has an error (pointless)
     if (date.error) return;
     // make sure day is a number
     if(!num.test(date.day)) date.setError(`Day '${date.day}' must be numeric.`);
     // check if the day is within the bounds of the correct days of the month
     if (date.day > getDaysOfMonth(date) || date.day < 1) date.setError(`Day '${date.day}' out of range > ${date.month} 1-${getDaysOfMonth(date)} days.`);
-    // add 0 if day doesnt have one
-    if (date.day.length < 2) date.day = 0 + date.day;
 
     // finished checks!
 }
