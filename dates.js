@@ -1,6 +1,10 @@
 const readline = require('readline');
 const fs = require('fs');
 
+// valid years
+const max_year = 3000;
+const min_year = 1753;
+
 // month list
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -54,7 +58,7 @@ function validateDate(date) {
             date.year = date.year < 50 ? '20' + date.year : '19' + date.year;
         } else date.setError(`Year '${date.year}' does not match acceptable format => yy or yyyy.`); // error if the length of year is invalid
     // check within bounds
-    } else if (date.year < 1753 || date.year > 3000) date.setError(`Year '${date.year}' out of range => 1753 - 3000.`); 
+    } else if (date.year < min_year || date.year > max_year) date.setError(`Year '${date.year}' out of range => ${min_year} - ${max_year}.`); 
 
     /**
      * Month Checks
