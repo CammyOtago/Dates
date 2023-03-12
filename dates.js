@@ -63,9 +63,11 @@ function validateDate(date) {
     /**
      * Month Checks
      */
+    const formatMsg_Month = `Month '${date.month}' does not match acceptable format => mm, m, 0m or 3 letters (case sensitive).`;
 
     // test if month uses only numbers
     if (num.test(date.month)) { 
+        if (date.month.length > 2) date.setError(formatMsg_Month);
         // check if date within bounds
         if (date.month > 12 || date.month < 1) {
             date.setError(`Month '${date.month}' out of range => 1-12.`)
@@ -77,7 +79,7 @@ function validateDate(date) {
         // check if month is inside the months array
         if (!months.includes(date.month)) date.setError(`Month '${date.month}' does not match any existing months.`); 
     // error here if month mixes or has special characters
-    } else date.setError(`Month '${date.month}' does not match acceptable format => mm, m, 0m or 3 letters (case sensitive).`);
+    } else date.setError(formatMsg_Month);
 
 
     /**
