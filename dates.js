@@ -155,7 +155,6 @@ function processLine(line) {
     }
 }
 
-
 /**
  * convertLinesToDates function
  * @param lines 
