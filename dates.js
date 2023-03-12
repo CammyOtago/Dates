@@ -79,9 +79,11 @@ function validateDate(date) {
     // don't even check the day if month or year has an error (pointless)
     if (date.error) return;
     // make sure day is a number
-    if(!num.test(date.day)) date.setError(`Day '${date.day}' must be numeric.`)
+    if(!num.test(date.day)) date.setError(`Day '${date.day}' must be numeric.`);
     // check if the day is within the bounds of the correct days of the month
     if (date.day > getDaysOfMonth(date) || date.day < 1) date.setError(`Day '${date.day}' out of range > ${date.month} 1-${getDaysOfMonth(date)} days.`);
+    // add 0 if day doesnt have one
+    if (date.day.length < 2) date.day = 0 + date.day;
 
     // finished checks!
 }
@@ -187,7 +189,7 @@ function readFromConsole() {
         process.exit();
     });
 
-    console.log('Enter a list of dates: ');
+    console.error('Enter a list of dates: ');
     // begin input stream
     rl.question();
 }
