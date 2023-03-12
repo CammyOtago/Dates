@@ -48,9 +48,9 @@ function validateDate(date) {
     if (date.year.length != 4) { // only run this code if the year isnt 4 digits
         if (date.year.length == 2) { // convert to 4 digit year
             date.year = date.year < 50 ? '20' + date.year : '19' + date.year;
-        } else date.setError(`Year '${date.year}' does not match acceptable format: yy or yyyy.`); // error if the length of year is invalid
+        } else date.setError(`Year '${date.year}' does not match acceptable format => yy or yyyy.`); // error if the length of year is invalid
     // check within bounds
-    } else if (date.year < 1753 || date.year > 3000) date.setError(`Year '${date.year}' out of range > 1753 - 3000.`); 
+    } else if (date.year < 1753 || date.year > 3000) date.setError(`Year '${date.year}' out of range => 1753 - 3000.`); 
 
     /**
      * Month Checks
@@ -60,7 +60,7 @@ function validateDate(date) {
     if (num.test(date.month)) { 
         // check if date within bounds
         if (date.month > 12 || date.month < 1) {
-            date.setError(`Month '${date.month}' out of range > 1-12.`)
+            date.setError(`Month '${date.month}' out of range => 1-12.`)
         } else date.month = months[date.month-1]; // convert to 3 letter format   
     // test if month uses only letters
     } else if (str.test(date.month)) { 
@@ -69,7 +69,7 @@ function validateDate(date) {
         // check if month is inside the months array
         if (!months.includes(date.month)) date.setError(`Month '${date.month}' does not match any existing months.`); 
     // error here if month mixes or has special characters
-    } else date.setError(`Month '${date.month}' does not match acceptable format > mm, m, 0m or 3 letters.`);
+    } else date.setError(`Month '${date.month}' does not match acceptable format => mm, m, 0m or 3 letters.`);
 
 
     /**
@@ -83,7 +83,7 @@ function validateDate(date) {
     // make sure day is a number
     if(!num.test(date.day)) date.setError(`Day '${date.day}' must be numeric.`);
     // check if the day is within the bounds of the correct days of the month
-    if (date.day > getDaysOfMonth(date) || date.day < 1) date.setError(`Day '${date.day}' out of range > ${date.month} 1-${getDaysOfMonth(date)} days.`);
+    if (date.day > getDaysOfMonth(date) || date.day < 1) date.setError(`Day '${date.day}' out of range => ${date.month} 1-${getDaysOfMonth(date)} days.`);
 
     // finished checks!
 }
@@ -99,7 +99,8 @@ function processLine(line) {
 
     // catch seperator error
     if (seperator == 'error') { 
-        console.log(`${line} - Invalid\nNo seperator found.`);
+        console.log(`${line} - INVALID`);
+        console.error('No seperator found.');
         return;
     } else {
         // split the date based on the seperator found
@@ -107,7 +108,8 @@ function processLine(line) {
         
         // make sure only one seperator type is used
         if (splitDate.length != 3) {
-            console.log(`${line} - Invalid\nDate is not seperated into 3 > day month year.`);
+            console.log(`${line} - INVALID`);
+            console.error('Date is not seperated into 3 => day month year.')
             return
         };
 
@@ -120,7 +122,7 @@ function processLine(line) {
                 if (!this.error) this.error = msg;
             },
             toString() {    // only logs error if one exists
-                return `${this.day} ${this.month} ${this.year} ${this.error ? ' - Invalid' : ''}`;
+                return `${this.day} ${this.month} ${this.year}`;
             }
         };
 
@@ -130,10 +132,14 @@ function processLine(line) {
         /**
          * If date reaches this point with no errors added,
          * it will print out perfectly,
-         * otherwise it will print out the first error it came across.
+         * otherwise it will print invalid and the std error will show.
         */
-       console.log(date.toString());
-       date.error ? console.error(date.error) : null;
+       if (date.error) {
+        console.log(`${line} - INVALID`);
+        console.error(date.error);
+       } else {
+        console.log(date.toString());
+       }
     }
 }
 
